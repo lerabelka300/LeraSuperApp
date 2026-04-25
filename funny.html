@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Кнопочка</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #f64f59 50%, #f093fb 100%);
+      background-size: 300% 300%;
+      animation: gradientShift 6s ease infinite;
+      font-family: 'Georgia', serif;
+      overflow: hidden;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #btn {
+      padding: 30px 60px;
+      font-size: 2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      background: white;
+      color: #333;
+      cursor: pointer;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 2px;
+      user-select: none;
+      min-width: 320px;
+      text-align: center;
+    }
+
+    #btn:hover { transform: scale(1.05); box-shadow: 0 14px 50px rgba(0,0,0,0.4); }
+    #btn:active { transform: scale(0.96); }
+
+    #btn.pop {
+      animation: pop 0.3s ease;
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.15) rotate(-2deg); }
+      100% { transform: scale(1); }
+    }
+
+    #counter {
+      margin-top: 28px;
+      color: white;
+      font-size: 1rem;
+      opacity: 0.85;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    #reaction {
+      position: fixed;
+      font-size: 3.5rem;
+      pointer-events: none;
+      animation: flyUp 1.2s ease forwards;
+      z-index: 99;
+    }
+
+    @keyframes flyUp {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-140px) scale(1.6); }
+    }
+
+    #tip {
+      position: fixed;
+      bottom: 24px;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="btn" onclick="nextWord()">Нажми меня</button>
+  <div id="counter"></div>
+  <div id="tip">нажимай и нажимай...</div>
+
+  <script>
+    const words = [
+      "БЮРГЕР", "МЯМЛЯ", "ПУЗЫРЬ", "ХРЮКАЛО", "ШМЯКНУТЬ",
+      "БУЛЬК", "ТЮТЕЛЬКА", "ПУЗАТИК", "ХИХИКАЛКА", "ШАРОМЫГА",
+      "ФИТЮЛЬКА", "ЛЯПОТА", "БЯКА", "СОПЕЛКА", "ТЮЛЕНЬ",
+      "КУДЫКИНА", "ХОХОТУШКА", "ПУПЫРЫШЕК", "МЯМЛИК", "КВАКША",
+      "ЗЮЗЯ", "ТЮКНУТЬ", "БАЛБЕС", "ШАЛОПАЙ", "ПЫХТЕЛКА",
+      "ПУЗОЖИТЕЛЬ", "ХРУМКАТЬ", "БУРКАЛЫ", "ШМЫГНУТЬ", "ТЮФЯК"
+    ];
+
+    const emojis = ["😂", "🤣", "💀", "😵", "🐸", "🥴", "😜", "🫠", "🤪", "😆"];
+
+    let count = 0;
+    let last = -1;
+
+    function nextWord() {
+      let idx;
+      do { idx = Math.floor(Math.random() * words.length); } while (idx === last);
+      last = idx;
+      count++;
+
+      const btn = document.getElementById('btn');
+      btn.textContent = words[idx];
+
+      btn.classList.remove('pop');
+      void btn.offsetWidth;
+      btn.classList.add('pop');
+
+      const counter = document.getElementById('counter');
+      counter.textContent = count === 1
+        ? "первый раз нажал 🎉"
+        : `нажато уже ${count} раз${ending(count)}`;
+
+      spawnEmoji();
+    }
+
+    function ending(n) {
+      const mod10 = n % 10, mod100 = n % 100;
+      if (mod100 >= 11 && mod100 <= 19) return "!";
+      if (mod10 === 1) return "!";
+      if (mod10 >= 2 && mod10 <= 4) return "а!";
+      return "!";
+    }
+
+    function spawnEmoji() {
+      const el = document.createElement('div');
+      el.id = 'reaction';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = (20 + Math.random() * 60) + 'vw';
+      el.style.top = (30 + Math.random() * 30) + 'vh';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1200);
+    }
+  </script>
+</body>
+</html>
