@@ -84,6 +84,31 @@
       font-size: 0.85rem;
       letter-spacing: 0.5px;
     }
+
+    .dog-img {
+      position: fixed;
+      width: 180px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      pointer-events: none;
+      z-index: 50;
+      animation: dogPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes dogPop {
+      0%   { opacity: 0; transform: scale(0.1) rotate(-20deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .dog-img.fade-out {
+      animation: dogFade 0.8s ease forwards;
+    }
+
+    @keyframes dogFade {
+      to { opacity: 0; transform: scale(0.8) rotate(5deg); }
+    }
   </style>
 </head>
 <body>
@@ -103,6 +128,12 @@
     ];
 
     const emojis = ["😂", "🤣", "💀", "😵", "🐸", "🥴", "😜", "🫠", "🤪", "😆"];
+
+    const dogs = [
+      "Dogs/dog_1.jpg", "Dogs/dog_2.jpg", "Dogs/dog_3.jpg", "Dogs/dog_4.jpg",
+      "Dogs/dog_5.jpg", "Dogs/dog_6.jpg", "Dogs/dog_7.jpg", "Dogs/dog_8.jpg",
+      "Dogs/dog_9.jpg", "Dogs/dog_10.jpg"
+    ];
 
     let count = 0;
     let last = -1;
@@ -126,6 +157,7 @@
         : `нажато уже ${count} раз${ending(count)}`;
 
       spawnEmoji();
+      spawnDog();
     }
 
     function ending(n) {
@@ -144,6 +176,40 @@
       el.style.top = (30 + Math.random() * 30) + 'vh';
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 1200);
+    }
+
+    function spawnDog() {
+      const img = document.createElement('img');
+      img.className = 'dog-img';
+      img.src = dogs[Math.floor(Math.random() * dogs.length)];
+
+      const btn = document.getElementById('btn');
+      const btnRect = btn.getBoundingClientRect();
+      const dogSize = 180;
+      const padding = 40;
+
+      let left, top, valid;
+      do {
+        valid = true;
+        left = Math.random() * (window.innerWidth - dogSize);
+        top = Math.random() * (window.innerHeight - dogSize);
+
+        // Проверяем пересечение с кнопкой
+        if (left < btnRect.right + padding &&
+            left + dogSize > btnRect.left - padding &&
+            top < btnRect.bottom + padding &&
+            top + dogSize > btnRect.top - padding) {
+          valid = false;
+        }
+      } while (!valid);
+
+      img.style.left = left + 'px';
+      img.style.top = top + 'px';
+      document.body.appendChild(img);
+      setTimeout(() => {
+        img.classList.add('fade-out');
+        setTimeout(() => img.remove(), 800);
+      }, 3500);
     }
   </script>
 </body>
